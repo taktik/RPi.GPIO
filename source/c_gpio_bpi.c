@@ -102,7 +102,7 @@ typedef struct sunxi_gpio_reg {
 #define GPIO_CFG_INDEX(pin)     (((pin) & 0x1F) >> 3)
 #define GPIO_CFG_OFFSET(pin)    ((((pin) & 0x1F) & 0x7) << 2)
 
-#define GPIO_PUL_INDEX(pin)     (((pin) & 0x1F )>> 4) 
+#define GPIO_PUL_INDEX(pin)     (((pin) & 0x1F )>> 4)
 #define GPIO_PUL_OFFSET(pin)    (((pin) & 0x0F) << 1)
 
 static volatile uint32_t *pio_map;
@@ -142,7 +142,7 @@ char *piModelNames [64] =
   "Raspbery Pi[RPI]",	// 18
   "Raspbery Pi[RPI2]",	// 19
   "Raspbery Pi[RPI3]",	// 20
-  "Banana Pi M1[A20]",	// 21	
+  "Banana Pi M1[A20]",	// 21
   "Banana Pi M1+[A20]",	// 22
   "Banana Pi R1[A20]",	// 23
   "Banana Pi M2[A31s]",	// 24
@@ -239,7 +239,7 @@ struct BPIBoards
  *********************************************************************************
  */
 
-struct BPIBoards bpiboard [] = 
+struct BPIBoards bpiboard [] =
 {
   { "bpi-0",	      -1, 0, 1, 2, 5, 0, NULL, NULL, NULL 	},
   { "bpi-1",	      -1, 1, 1, 2, 5, 0, NULL, NULL, NULL 	},
@@ -289,7 +289,7 @@ int mtk_set_gpio_out(unsigned int pin, unsigned int output)
     uint32_t position = 0;
 
     position = gpio_mmap_reg + MTK_GPIO_DOUT + (pin / 16) * 16;
-    printf("pin=%d, output = %d, positon = %X\n", pin, output, position);
+    //printf("pin=%d, output = %d, positon = %X\n", pin, output, position);
     tmp = *(volatile uint32_t*)(position);
     printf("tmp = %X\n", tmp);
     if(output == 1){
@@ -297,9 +297,9 @@ int mtk_set_gpio_out(unsigned int pin, unsigned int output)
     }else{
 	    tmp &= ~(1u << (pin % 16));
     }
-    printf("tmp = %X\n", tmp);
+    //printf("tmp = %X\n", tmp);
     *(volatile uint32_t*)(position) = tmp;
-    printf("finish mtk_set_gpio_out\n");
+    //printf("finish mtk_set_gpio_out\n");
     return 1;
 
 }
@@ -316,15 +316,15 @@ int mtk_set_gpio_dir(unsigned int pin, unsigned int dir)
     }
     printf("pin=%d, dir=%d, positon = %X\n", pin, dir, position);
     tmp = *(volatile uint32_t*)(position);
-    printf("tmp = %X\n", tmp);
+    //printf("tmp = %X\n", tmp);
     if(dir == 1){
         tmp |= (1u << (pin % 16));
     }else{
 	tmp &= ~(1u << (pin % 16));
     }
-    printf("tmp = %X\n", tmp);
+    //printf("tmp = %X\n", tmp);
     *(volatile uint32_t*)(position) = tmp;
-    return 0;   
+    return 0;
 
 }
 
@@ -336,9 +336,9 @@ int mtk_set_gpio_mode(unsigned int pin, unsigned int mode){
     printf("pin=%d, mode=%d, positon = %X\n", pin, mode, position);
     tmp = *(volatile uint32_t*)(position);
 
-    printf("tmp = %X\n", tmp);
+    //printf("tmp = %X\n", tmp);
     tmp &= ~(1u << ((pin % 5) * 3));
-    printf("tmp = %X\n", tmp);
+    //printf("tmp = %X\n", tmp);
 
     *(volatile uint32_t*)(position) = tmp;
     return ;
@@ -352,7 +352,7 @@ int mtk_setup(void)
         fprintf(stderr, "unable to open mmap file");
         return -1;
     }
-    
+
       gpio_mmap_reg = (uint8_t*)mmap(NULL, 8 * 1024, PROT_READ | PROT_WRITE,
         MAP_FILE | MAP_SHARED, gpio_mmap_fd, 0x10005000);
     if (gpio_mmap_reg == MAP_FAILED) {
@@ -371,17 +371,17 @@ int mtk_setup(void)
 
 uint32_t sunxi_readl(volatile uint32_t *addr)
 {
-    printf("sunxi_readl\n");
+    //printf("sunxi_readl\n");
     uint32_t val = 0;
     uint32_t mmap_base = (uint32_t)addr & (~MAP_MASK);
     uint32_t mmap_seek = ((uint32_t)addr - mmap_base) >> 2;
     val = *(gpio_map + mmap_seek);
     return val;
-}   
+}
 
 void sunxi_writel(volatile uint32_t *addr, uint32_t val)
 {
-    printf("sunxi_writel\n");
+    //printf("sunxi_writel\n");
     uint32_t mmap_base = (uint32_t)addr & (~MAP_MASK);
     uint32_t mmap_seek =( (uint32_t)addr - mmap_base) >> 2;
     *(gpio_map + mmap_seek) = val;
@@ -399,7 +399,7 @@ int sunxi_setup(void)
     char buffer[1024];
     char hardware[1024];
     int found = 0;
-	printf("enter to sunxi_setup\n");
+	//printf("enter to sunxi_setup\n");
 
     // mmap the GPIO memory registers
     if ((mem_fd = open("/dev/mem", O_RDWR|O_SYNC) ) < 0)
@@ -454,7 +454,7 @@ void sunxi_setup_gpio(int gpio, int direction, int pud)
     int offset = GPIO_CFG_OFFSET(gpio); // ((gpio & 0x1F) & 0x7) << 2
     printf("sunxi_setup_gpio\n");
     sunxi_gpio_t *pio = &((sunxi_gpio_reg_t *) pio_map)->gpio_bank[bank];
-/* DK, for PL and PM */
+    /* DK, for PL and PM */
     if(bank >= 11) {
       bank -= 11;
       pio = &((sunxi_gpio_reg_t *) r_pio_map)->gpio_bank[bank];
@@ -481,9 +481,9 @@ int sunxi_gpio_function(int gpio)
     int bank = GPIO_BANK(gpio); //gpio >> 5
     int index = GPIO_CFG_INDEX(gpio); // (gpio & 0x1F) >> 3
     int offset = GPIO_CFG_OFFSET(gpio); // ((gpio & 0x1F) & 0x7) << 2
-     printf("sunxi_gpio_function\n");
+    //printf("sunxi_gpio_function\n");
     sunxi_gpio_t *pio = &((sunxi_gpio_reg_t *) pio_map)->gpio_bank[bank];
-/* DK, for PL and PM */
+    /* DK, for PL and PM */
     if(bank >= 11) {
       bank -= 11;
       pio = &((sunxi_gpio_reg_t *) r_pio_map)->gpio_bank[bank];
@@ -500,9 +500,9 @@ void sunxi_output_gpio(int gpio, int value)
     int bank = GPIO_BANK(gpio); //gpio >> 5
     int num = GPIO_NUM(gpio); // gpio & 0x1F
 
- printf("gpio(%d) bank(%d) num(%d)\n", gpio, bank, num);
+    //printf("gpio(%d) bank(%d) num(%d)\n", gpio, bank, num);
     sunxi_gpio_t *pio = &((sunxi_gpio_reg_t *) pio_map)->gpio_bank[bank];
-/* DK, for PL and PM */
+    /* DK, for PL and PM */
     if(bank >= 11) {
       bank -= 11;
       pio = &((sunxi_gpio_reg_t *) r_pio_map)->gpio_bank[bank];
@@ -520,9 +520,9 @@ int sunxi_input_gpio(int gpio)
     int bank = GPIO_BANK(gpio); //gpio >> 5
     int num = GPIO_NUM(gpio); // gpio & 0x1F
 
- printf("gpio(%d) bank(%d) num(%d)\n", gpio, bank, num);
+    //printf("gpio(%d) bank(%d) num(%d)\n", gpio, bank, num);
     sunxi_gpio_t *pio = &((sunxi_gpio_reg_t *) pio_map)->gpio_bank[bank];
-/* DK, for PL and PM */
+    /* DK, for PL and PM */
     if(bank >= 11) {
       bank -= 11;
       pio = &((sunxi_gpio_reg_t *) r_pio_map)->gpio_bank[bank];
@@ -553,7 +553,7 @@ int bpi_piGpioLayout (void)
     fgets(buffer, sizeof(buffer), bpiFd);
     sscanf(buffer, "BOARD=%s", hardware);
     //printf("BPI: buffer[%s] hardware[%s]\n",buffer, hardware);
-// Search for board:
+    // Search for board:
     for (board = bpiboard ; board->name != NULL ; ++board) {
       //printf("BPI: name[%s] hardware[%s]\n",board->name, hardware);
       if (strcmp (board->name, hardware) == 0) {
@@ -595,7 +595,7 @@ int bpi_get_rpi_info(rpi_info *info)
      //jude mtk platform
     if(strcmp(board->name, "bpi-r2") == 0){
         bpi_found_mtk = 1;
-	printf("found mtk board\n");
+	    printf("found mtk board\n");
     }
     sprintf(manufacturer, "%s", piMakerNames [board->maker]);
     info->p1_revision = 3;
@@ -607,7 +607,7 @@ int bpi_get_rpi_info(rpi_info *info)
     }else{
 	info->processor = "Allwinner";
     }
-    
+
     strcpy(info->revision, "4001");
 //    pin_to_gpio =  board->physToGpio ;
     pinToGpio_BP =  board->pinToGpio ;

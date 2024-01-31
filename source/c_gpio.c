@@ -159,7 +159,7 @@ void clear_event_detect(int gpio)
 #ifdef BPI
     if( bpi_found == 1 ) {
         return;
-	} 
+	}
 #endif
     *(gpio_map+offset) |= (1 << shift);
     short_wait();
@@ -173,7 +173,7 @@ int eventdetected(int gpio)
 #ifdef BPI
     if( bpi_found == 1 ) {
         return;
-	} 
+	}
 #endif
     offset = EVENT_DETECT_OFFSET + (gpio/32);
     bit = (1 << (gpio%32));
@@ -191,7 +191,7 @@ void set_rising_event(int gpio, int enable)
 #ifdef BPI
     if( bpi_found == 1 ) {
         return;
-	} 
+	}
 #endif
     if (enable)
         *(gpio_map+offset) |= 1 << shift;
@@ -208,7 +208,7 @@ void set_falling_event(int gpio, int enable)
 #ifdef BPI
     if( bpi_found == 1 ) {
         return;
-	} 
+	}
 #endif
     if (enable) {
         *(gpio_map+offset) |= (1 << shift);
@@ -244,7 +244,7 @@ void set_low_event(int gpio, int enable)
 #ifdef BPI
     if( bpi_found == 1 ) {
         return;
-	} 
+	}
 #endif
     if (enable)
         *(gpio_map+offset) |= 1 << shift;
@@ -289,7 +289,7 @@ void setup_gpio(int gpio, int direction, int pud)
 	}else{
 		return sunxi_setup_gpio(gpio, direction, pud);
 	}
-        
+
     }
     else {
 #endif
@@ -317,7 +317,7 @@ int gpio_function(int gpio)
 	}else{
 		return sunxi_gpio_function(gpio);
 	}
-       
+
     }
     else {
 #endif
@@ -328,7 +328,7 @@ int gpio_function(int gpio)
     value >>= shift;
     value &= 7;
     return value; // 0=input, 1=output, 4=alt0
-#ifdef BPI	
+#ifdef BPI
     }
 #endif
 }
@@ -339,9 +339,9 @@ void output_gpio(int gpio, int value)
 
 #ifdef BPI
     if ( bpi_found == 1)  {
-	printf("gpio = %d, value = %d\n", gpio, value);
+	//printf("gpio = %d, value = %d\n", gpio, value);
 	gpio = *(pinTobcm_BP + gpio);
-	printf("gpio = %d, value = %d\n", gpio, value);
+	//printf("gpio = %d, value = %d\n", gpio, value);
 	if(bpi_found_mtk ==  1){
 		mtk_set_gpio_out(gpio, value);
 	}else{
@@ -349,7 +349,7 @@ void output_gpio(int gpio, int value)
 	}
        return;
     }
-#endif	
+#endif
     if (value) // value == HIGH
         offset = SET_OFFSET + (gpio/32);
     else       // value == LOW
@@ -370,7 +370,7 @@ int input_gpio(int gpio)
       gpio = *(pinTobcm_BP + gpio);
       return sunxi_input_gpio(gpio);
    }
-#endif	
+#endif
    offset = PINLEVEL_OFFSET + (gpio/32);
    mask = (1 << gpio%32);
    value = *(gpio_map+offset) & mask;
